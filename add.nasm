@@ -6,8 +6,11 @@ section .bss
 section .text
     global add_latency
 
+%ifndef iters
+    %define iters 100000
+%endif
 
-%macro seerialize 0
+%macro serialize 0
        xor     eax, eax
        cpuid
 %endmacro
@@ -21,13 +24,13 @@ add_latency:
 serialize
     rdtsc
     mov r9, rax
-%rep 10000
-    add ebx, $5
+%rep iters
+    add ebx, 5
 %endrep
 serialize
     rdtsc
     sub rax, r9
-    mov r8, 10000
+    mov r8, iters
     cvtsi2ss xmm1, r8
     cvtsi2ss xmm0, rax
     divss xmm0, xmm1
