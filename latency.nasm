@@ -5,6 +5,7 @@ section .bss
 
 section .text
     global add_latency
+    global mul_latency
 
 %ifndef iters
     %define iters 100000
@@ -20,6 +21,8 @@ section .text
 ; where each instruction depends on the previous instruction.
 ;
 add_latency:
+    push rbx
+    push r9
     mov ebx, 0
 serialize
     rdtsc
@@ -34,4 +37,30 @@ serialize
     cvtsi2ss xmm1, r8
     cvtsi2ss xmm0, rax
     divss xmm0, xmm1
+    pop r9
+    pop rbx
+    ret
+
+mul_latency:
+    push rbx
+    push r9
+    mov ebx, 75
+serialize
+    rdtsc
+    mov r9, rax
+%rep iters
+    imul ebx, ebx, 87
+%endrep
+serialize
+    rdtsc
+    sub rax, r9
+    mov r8, iters
+    cvtsi2ss xmm1, r8
+    cvtsi2ss xmm0, rax
+    divss xmm0, xmm1
+    pop r9
+    pop rbx
+    ret
+
+
 
