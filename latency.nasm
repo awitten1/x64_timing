@@ -7,6 +7,7 @@ section .text
     global add_latency
     global mul_latency
     global div_latency
+    global call_add_latency
 
 %ifndef iters
     %define iters 100000
@@ -64,6 +65,36 @@ serialize
     ret
 
 
+
+
+call_add_latency:
+    push rbx
+    push r9
+    mov ebx, 0
+serialize
+    rdtsc
+    mov r9, rax
+    mov rdi, 18
+    mov rsi, $-84
+%rep iters
+    call call_add_latency_helper
+%endrep
+serialize
+    rdtsc
+    sub rax, r9
+    mov r8, iters
+    cvtsi2ss xmm1, r8
+    cvtsi2ss xmm0, rax
+    divss xmm0, xmm1
+    pop r9
+    pop rbx
+    ret
+
+
+call_add_latency_helper:
+    add rdi, rsi
+    mov rax, rdi
+    ret
 
 
 div_latency:
