@@ -75,9 +75,10 @@ serialize
     rdtsc
     mov r9, rax
     mov rdi, 18
-    mov rsi, $-84
+    mov rsi, -84
 %rep iters
     call call_add_latency_helper
+    mov rdi, rax ; to introduce data dependency.
 %endrep
 serialize
     rdtsc
