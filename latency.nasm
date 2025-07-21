@@ -8,6 +8,8 @@ section .text
     global mul_latency
     global div_latency
     global call_add_latency
+    global getpid_impl
+    global getpid_latency
 
 %ifndef iters
     %define iters 100000
@@ -122,6 +124,38 @@ serialize
     pop r8
     pop r9
     pop rbx
+    ret
+
+getpid_latency:
+    push rbx
+    push r9
+    push r8
+    mov ebx, 75
+serialize
+    rdtsc
+    mov r9, rax
+%rep iters
+    mov rax, 0x27
+    syscall
+%endrep
+serialize
+    rdtsc
+    sub rax, r9
+    mov r8, iters
+    cvtsi2ss xmm1, r8
+    cvtsi2ss xmm0, rax
+    divss xmm0, xmm1
+    pop r8
+    pop r9
+    pop rbx
+    ret
+
+
+
+
+getpid_impl:
+    mov rax, 0x27
+    syscall
     ret
 
 
