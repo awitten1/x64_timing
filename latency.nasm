@@ -6,6 +6,7 @@ section .bss
 section .text
     global add_latency
     global mul_latency
+    global div_latency
 
 %ifndef iters
     %define iters 100000
@@ -62,5 +63,33 @@ serialize
     pop rbx
     ret
 
+
+
+
+div_latency:
+    push rbx
+    push r9
+    push r8
+    mov ebx, 75
+serialize
+    rdtsc
+    mov r9, rax
+    mov rax, 0
+    mov rdx, 0
+    mov r8, $89
+%rep iters
+    div r8
+%endrep
+serialize
+    rdtsc
+    sub rax, r9
+    mov r8, iters
+    cvtsi2ss xmm1, r8
+    cvtsi2ss xmm0, rax
+    divss xmm0, xmm1
+    pop r8
+    pop r9
+    pop rbx
+    ret
 
 
