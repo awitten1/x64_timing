@@ -71,10 +71,15 @@ serialize
 do_getpids:
     push rbx
 serialize
+    mov ebx, 10
+align 16
+.loop:
 %rep iters
     mov rax, 0x27
     syscall
 %endrep
+    dec ebx
+    jnz .loop
 serialize
     pop rbx
     ret

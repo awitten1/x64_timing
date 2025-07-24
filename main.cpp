@@ -63,10 +63,11 @@ int main() {
     pin_thread(0);
     warmup_cpu();
 
+    do_getpids();
     uint64_t c1 = rdmsr0(0xC00000E8);
     do_getpids();
     uint64_t c2 = rdmsr0(0xC00000E8);
-    std::cout << ((c2 - c1) / (double)ITERS) << std::endl;;
+    std::cout << ((c2 - c1) / (double)(ITERS*10)) << std::endl;;
 
     add_latency(); add_latency();
     std::cout << "add latency " << add_latency() << std::endl;
