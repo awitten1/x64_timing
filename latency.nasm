@@ -10,6 +10,7 @@ section .text
     global call_add_latency
     global getpid_impl
     global getpid_latency
+    global do_getpids
 
 %ifndef iters
     %define iters 100000
@@ -67,7 +68,16 @@ serialize
     ret
 
 
-
+do_getpids:
+    push rbx
+serialize
+%rep iters
+    mov rax, 0x27
+    syscall
+%endrep
+serialize
+    pop rbx
+    ret
 
 call_add_latency:
     push rbx
